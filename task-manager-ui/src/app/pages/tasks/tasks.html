@@ -1,0 +1,100 @@
+<div class="page-container">
+  <header class="page-header">
+    <div class="header-titles">
+      <h1>Gestión de Tareas</h1>
+      <p class="subtitle">Sistema de Gestión y Seguimiento de tareas</p>
+    </div>
+    <button mat-fab extended color="primary" (click)="openCreateDialog()">
+      <mat-icon>add</mat-icon>
+      Nueva tarea
+    </button>
+  </header>
+
+  <div class="toolbar">
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Filtrar por Estado</mat-label>
+      <mat-select [(value)]="selectedStatus" (selectionChange)="loadTasks()">
+        <mat-option [value]="null">Todos los estados</mat-option>
+        <mat-option [value]="TaskStatus.Pending">Pending</mat-option>
+        <mat-option [value]="TaskStatus.InProgress">InProgress</mat-option>
+        <mat-option [value]="TaskStatus.Done">Done</mat-option>
+      </mat-select>
+      <mat-icon matPrefix>filter_list</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <mat-card class="table-card">
+    <table mat-table [dataSource]="tasks" class="full-width-table">
+
+      <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef> Tarea </th>
+        <td mat-cell *matCellDef="let t">
+          <div class="title-container">
+            <span class="task-title">{{ t.title }}</span>
+            <span class="task-date">
+              <mat-icon inline>calendar_today</mat-icon> 
+              Creado: {{ t.createdAt | date:'dd/MM/yyyy HH:mm' }}
+            </span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="priority">
+        <th mat-header-cell *matHeaderCellDef> Prioridad </th>
+        <td mat-cell *matCellDef="let t">
+          <span class="priority-tag" 
+                [ngClass]="'priority-' + (t.additionalData?.priority?.toLowerCase() || 'none')">
+            {{ t.additionalData?.priority || 'Sin asignar' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef> Estado </th>
+        <td mat-cell *matCellDef="let t">
+          <span class="status-chip" [ngClass]="TaskStatus[t.status].toLowerCase()">
+            {{ TaskStatus[t.status] }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="text-center"> Cambiar Estado </th>
+        <td mat-cell *matCellDef="let t" class="actions-cell">
+          <div class="button-group">
+            <button mat-icon-button 
+                    matTooltip="Pendiente"
+                    [disabled]="t.status === TaskStatus.Pending"
+                    (click)="changeStatus(t, TaskStatus.Pending)">
+              <mat-icon>timer</mat-icon>
+            </button>
+
+            <button mat-icon-button 
+                    color="accent" 
+                    matTooltip="Iniciar"
+                    [disabled]="t.status === TaskStatus.InProgress"
+                    (click)="changeStatus(t, TaskStatus.InProgress)">
+              <mat-icon>play_circle_outline</mat-icon>
+            </button>
+
+            <button mat-icon-button 
+                    color="primary" 
+                    matTooltip="Finalizar"
+                    [disabled]="t.status === TaskStatus.Done"
+                    (click)="changeStatus(t, TaskStatus.Done)">
+              <mat-icon>check_circle</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="['title', 'priority', 'status', 'actions']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['title', 'priority', 'status', 'actions'];" class="task-row"></tr>
+    </table>
+
+    <div *ngIf="tasks.length === 0" class="empty-state">
+      <mat-icon>assignment_late</mat-icon>
+      <p>No se encontraron tareas con este filtro.</p>
+    </div>
+  </mat-card>
+</div>

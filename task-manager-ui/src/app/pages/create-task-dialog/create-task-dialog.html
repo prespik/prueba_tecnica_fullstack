@@ -1,0 +1,47 @@
+<h2 mat-dialog-title>Nueva tarea</h2>
+
+<mat-dialog-content class="mat-typography">
+  <form [formGroup]="form" class="dialog-form">
+    
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Título</mat-label>
+      <input matInput formControlName="title" placeholder="Ej. Comprar leche" />
+      <mat-error *ngIf="form.get('title')?.hasError('required')">
+        El título es obligatorio
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Descripción</mat-label>
+      <textarea matInput rows="3" formControlName="description"></textarea>
+    </mat-form-field>
+
+    <div class="row">
+      <mat-form-field appearance="outline" class="flex-1">
+        <mat-label>Usuario</mat-label>
+        <mat-select formControlName="userId">
+          <mat-option *ngFor="let u of users" [value]="u.id">
+            {{ u.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="flex-1">
+        <mat-label>Prioridad</mat-label>
+        <mat-select formControlName="priority">
+          <mat-option value="Low">Baja</mat-option>
+          <mat-option value="Medium">Media</mat-option>
+          <mat-option value="High">Alta</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancelar</button>
+  <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="submit()">
+    Crear tarea
+  </button>
+</mat-dialog-actions>
